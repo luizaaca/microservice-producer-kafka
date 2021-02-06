@@ -1,0 +1,52 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+</div>
+
+<div class="text-center">
+    <form class="form-group">
+        <label>Send a message:</label>
+        <input id="message" type="text" placeholder="Type it here..." />
+        <button id="send" class="btn btn-success">Send</button>
+    </form>
+
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('#send').click((e) => {
+                e.preventDefault();
+                let message = $('#message').val();
+                if (message)
+                    $.ajax({
+                        url: 'api/Messages',
+                        method: 'POST',
+                        data: { "value": message },
+                        success: displaySuccess,
+                        error: displayError
+                    });
+                else
+                    alert("Please type something.");
+            })
+
+            function clearForm() {
+                $('#message').val('');
+            }
+
+            function displaySuccess(data) {
+                alert('Sent!');
+                clearForm();
+            }
+
+            function displayError(data, error, errorThrown) {
+                alert("Error: " + data.responseJSON.title);
+                console.log(data);
+                clearForm();
+            }
+        })
+    </script>
+}

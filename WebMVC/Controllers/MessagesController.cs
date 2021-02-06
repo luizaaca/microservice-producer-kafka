@@ -25,20 +25,27 @@ namespace WebMVC.Controllers
         [HttpPost]
         public IActionResult Post([FromForm] string value)
         {
-            if (string.IsNullOrWhiteSpace(value))
-                return BadRequest();
+            try
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    return BadRequest();
 
-            using var producer = new ProducerBuilder<Null, string>(config).Build();
+                using var producer = new ProducerBuilder<Null, string>(config).Build();
 
-            producer
-                 .ProduceAsync("Topic", new Message<Null, string> { Value = value })
-                 .ContinueWith((task) =>
-                 {
-                     Console.WriteLine("Status: {0}, Message: {1}, Offset: {2}", task.Result.Status, task.Result.Value, task.Result.Offset.Value);
-                 })
-                 .Wait();
+                producer
+                     .ProduceAsync("Topic", new Message<Null, string> { Value = value })
+                     .ContinueWith((task) =>
+                     {
+                         Console.WriteLine("Status: {0}, Message: {1}, Offset: {2}", task.Result.Status, task.Result.Value, task.Result.Offset.Value);
+                     })
+                     .Wait();
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
         }
     }
 }
